@@ -57,10 +57,8 @@ fn generate_image(
 //     Ok(())
 // }
 
-fn parse_hex_color(hex_color: &str) -> Result<Rgb<u8>, hex::FromHexError> {
-    if hex_color.len() != 6 {
-        return Err(hex::FromHexError::InvalidStringLength);
-    }
+fn parse_hex_color(hex_color: &str) -> Result<Rgb<u8>, Box<dyn Error>> {
+    let hex_color: &str = &hex_color[1..hex_color.len()]; // For the `#` at the start of hex strings.
     let array: [u8; 3] = hex::decode(hex_color)?.try_into().unwrap();
     Ok(*Rgb::<u8>::from_slice(&array))
 }
