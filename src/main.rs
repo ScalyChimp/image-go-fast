@@ -43,18 +43,11 @@ fn generate_image(
 ) -> Result<RgbImage, Box<dyn Error>> {
     let mut buffer = image.into_rgb8();
     for pixel in buffer.pixels_mut() {
-        palette.sort_by_key(|pix| color_dif(pixel, pix)); // Rust iterators my beloved.
+        palette.sort_unstable_by_key(|pix| color_dif(pixel, pix)); // Rust iterators my beloved.
         *pixel = palette[0]
     }
     Ok(buffer)
 }
-
-// fn generate_image_average(
-//     image: DynamicImage,
-//     palette: Vec<Rgb<u8>>,
-// ) -> Result<RgbImage, Box<dyn Error>> {
-//     Ok(())
-// }
 
 fn parse_hex_color(hex_color: &str) -> Result<Rgb<u8>, Box<dyn Error>> {
     let hex_color: &str = &hex_color[1..hex_color.len()]; // For the `#` at the start of hex strings.
