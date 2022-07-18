@@ -30,7 +30,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     let gruvbox = deserialize_palette_file(
         "/home/scalychimp/coding/themeifier/palettes/gruvbox-white.txt".into(),
     )?;
-    println!("{:?}", gruvbox[0]);
     let new_image = generate_image(image, gruvbox)?;
     println!("image generated");
     new_image.save(args.new_image_path)?;
