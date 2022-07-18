@@ -44,7 +44,7 @@ fn generate_image(
 ) -> Result<RgbImage, Box<dyn Error>> {
     let mut buffer = image.into_rgb8();
     for pixel in buffer.pixels_mut() {
-        palette.sort_unstable_by_key(|pix| color_dif(pixel, pix)); // Rust iterators my beloved.
+        palette.sort_by_key(|pix| color_dif(pixel, pix)); // Rust iterators my beloved.
         *pixel = palette[0]
     }
     Ok(buffer)
