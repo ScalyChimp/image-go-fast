@@ -1,5 +1,5 @@
 [package]
-name = "image_go_fast"
+name = "image-go-fast"
 version = "0.1.0"
 edition = "2021"
 

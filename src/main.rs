@@ -27,7 +27,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let image = ImageReader::open(&args.image_path)?.decode()?;
     println!("getting palette");
     let palette = deserialize_palette_file(
-        "/home/scalychimp/coding/image_go_fast/palettes/gruvbox.txt".into(),
+        "/home/scalychimp/coding/image-go-fast/palettes/gruvbox.txt".into(),
     )?;
     let image = generate_image(image, palette)?;
     println!("saving image");
