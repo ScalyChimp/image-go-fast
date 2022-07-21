@@ -49,12 +49,6 @@ fn generate_image(
     Ok(buffer)
 }
 
-fn parse_hex_color(hex_color: &str) -> Result<Rgb<u8>, Box<dyn Error>> {
-    let hex_color: &str = &hex_color[1..hex_color.len()]; // For the `#` at the start of hex strings.
-    let array: [u8; 3] = hex::decode(hex_color)?.try_into().unwrap();
-    Ok(*Rgb::<u8>::from_slice(&array))
-}
-
 fn color_dif(col1: &Rgb<u8>, col2: &Rgb<u8>) -> i32 {
     let chan1 = col1.channels();
     let chan2 = col2.channels();
@@ -64,6 +58,12 @@ fn color_dif(col1: &Rgb<u8>, col2: &Rgb<u8>) -> i32 {
         chan1[2] as i32 - chan2[2] as i32,
     ];
     i32::abs(vec.into_iter().sum())
+
+fn parse_hex_color(hex_color: &str) -> Result<Rgb<u8>, Box<dyn Error>> {
+    let hex_color: &str = &hex_color[1..hex_color.len()]; // For the `#` at the start of hex strings.
+    let array: [u8; 3] = hex::decode(hex_color)?.try_into().unwrap();
+    // let array = [array[0] as u8, array[1] as u8, array[2] as u8];
+    Ok(*Rgb::<u8>::from_slice(&array))
 }
 
 fn deserialize_palette_file(path: String) -> Result<Vec<Rgb<u8>>, Box<dyn Error>> {
