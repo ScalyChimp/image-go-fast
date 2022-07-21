@@ -37,14 +37,14 @@ fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn generate_image(
-    image: DynamicImage,
-    mut palette: Vec<Rgb<u8>>,
-) -> Result<RgbImage, Box<dyn Error>> {
+fn generate_image(image: DynamicImage, palette: Vec<Rgb<u8>>) -> Result<RgbImage, Box<dyn Error>> {
     let mut buffer = image.into_rgb8();
     for pixel in buffer.pixels_mut() {
-        palette.sort_unstable_by_key(|pix| color_dif(pixel, pix)); // Rust iterators my beloved.
-        *pixel = palette[0]
+        // palette.sort_unstable_by_key(|pix| color_dif(pixel, pix)); // Rust iterators my beloved.
+        *pixel = *palette
+            .iter()
+            .min_by_key(|pix| color_dif(pixel, pix))
+            .unwrap();
     }
     Ok(buffer)
 }
