@@ -53,11 +53,12 @@ fn color_dif(col1: &Rgb<u8>, col2: &Rgb<u8>) -> i32 {
     let chan1 = col1.channels();
     let chan2 = col2.channels();
     let vec: Vec<i32> = vec![
-        chan1[0] as i32 - chan2[0] as i32,
-        chan1[1] as i32 - chan2[1] as i32,
-        chan1[2] as i32 - chan2[2] as i32,
+        i32::abs(chan1[0] as i32 - chan2[0] as i32),
+        i32::abs(chan1[1] as i32 - chan2[1] as i32),
+        i32::abs(chan1[2] as i32 - chan2[2] as i32),
     ];
-    i32::abs(vec.into_iter().sum())
+    vec.into_iter().sum()
+}
 
 fn parse_hex_color(hex_color: &str) -> Result<Rgb<u8>, Box<dyn Error>> {
     let hex_color: &str = &hex_color[1..hex_color.len()]; // For the `#` at the start of hex strings.
