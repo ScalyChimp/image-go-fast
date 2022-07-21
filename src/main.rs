@@ -23,24 +23,22 @@ struct Args {
 
 fn main() -> Result<(), Box<dyn Error>> {
     let args = Args::parse();
-    println!("args: {:?}", args);
     println!("opening image");
     let image = ImageReader::open(&args.image_path)?.decode()?;
     println!("getting palette");
-    let gruvbox = deserialize_palette_file(
-        "/home/scalychimp/coding/image_go_fast/palettes/gruvbox-white.txt".into(),
+    let palette = deserialize_palette_file(
+        "/home/scalychimp/coding/image_go_fast/palettes/gruvbox.txt".into(),
     )?;
-    let new_image = generate_image(image, gruvbox)?;
-    println!("image generated");
-    new_image.save(args.new_image_path)?;
-    println!("image saved");
+    let image = generate_image(image, palette)?;
+    println!("saving image");
+    image.save(args.image_path)?;
+    println!("image saved!");
     Ok(())
 }
 
 fn generate_image(image: DynamicImage, palette: Vec<Rgb<u8>>) -> Result<RgbImage, Box<dyn Error>> {
     let mut buffer = image.into_rgb8();
     for pixel in buffer.pixels_mut() {
-        // palette.sort_unstable_by_key(|pix| color_dif(pixel, pix)); // Rust iterators my beloved.
         *pixel = *palette
             .iter()
             .min_by_key(|pix| color_dif(pixel, pix))
