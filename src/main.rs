@@ -1,4 +1,4 @@
-use clap::Parser;
+use gumdrop::Options;
 use image::io::Reader as ImageReader;
 use image::DynamicImage;
 use image::Pixel;
@@ -10,28 +10,36 @@ use std::io::BufRead;
 use std::io::BufReader;
 use std::path::PathBuf;
 
-#[derive(Parser, Debug)]
-#[clap(author, version, about, long_about = None)]
+#[derive(Options, Debug)]
 struct Args {
-    /// Path to image.
-    #[clap(short, long, parse(from_os_str), value_hint = clap::ValueHint::FilePath)]
-    image_path: PathBuf,
-    /// where to save new image
-    #[clap(short, long, parse(from_os_str), value_hint = clap::ValueHint::FilePath)]
-    new_image_path: PathBuf,
+    #[options(free, parse(from_str = "PathBuf::from"), help = "Path to input file")]
+    input: PathBuf,
+
+    #[options(
+        free,
+        parse(from_str = "PathBuf::from"),
+        help = "Where to save output to, image will be saved according to file extension"
+    )]
+    output: PathBuf,
+
+    #[options(help = "print help message")]
+    help: bool,
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let args = Args::parse();
-    println!("opening image");
-    let image = ImageReader::open(&args.image_path)?.decode()?;
+    let args = Args::parse_args_default_or_exit();
+
     println!("getting palette");
     let palette = deserialize_palette_file(
         "/home/scalychimp/coding/image-go-fast/palettes/gruvbox.txt".into(),
     )?;
+
+    println!("opening image");
+    let image = ImageReader::open(args.input)?.decode()?;
+    println!("generating image");
     let image = generate_image(image, palette)?;
     println!("saving image");
-    image.save(args.image_path)?;
+    image.save(args.output)?;
     println!("image saved!");
     Ok(())
 }
