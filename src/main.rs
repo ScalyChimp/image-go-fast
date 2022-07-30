@@ -24,15 +24,23 @@ struct Args {
 
     #[options(help = "print help message")]
     help: bool,
+
+    #[options(help = "Optional path to palette file")]
+    palette_path: Option<PathBuf>,
+
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
     let args = Args::parse_args_default_or_exit();
 
     println!("getting palette");
-    let palette = deserialize_palette_file(
-        "/home/scalychimp/coding/image-go-fast/palettes/gruvbox.txt".into(),
-    )?;
+    let palette = if let Some(path) = args.palette_path {
+        deserialize_palette_file(path)?
+    } else {
+        deserialize_palette_file(
+            "/home/scalychimp/coding/image-go-fast/palettes/gruvbox.txt".into(),
+        )?
+    };
 
     println!("opening image");
     let image = ImageReader::open(args.input)?.decode()?;
@@ -72,7 +80,7 @@ fn parse_hex_color(hex_color: &str) -> Result<Rgb<u8>, Box<dyn Error>> {
     Ok(*Rgb::<u8>::from_slice(&array))
 }
 
-fn deserialize_palette_file(path: String) -> Result<Vec<Rgb<u8>>, Box<dyn Error>> {
+fn deserialize_palette_file(path: PathBuf) -> Result<Vec<Rgb<u8>>, Box<dyn Error>> {
     let file = File::open(path)?;
     let colors = BufReader::new(file)
         .lines()
