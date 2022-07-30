@@ -1,4 +1,5 @@
 use gumdrop::Options;
+use image::imageops;
 use image::io::Reader as ImageReader;
 use image::DynamicImage;
 use image::Pixel;
@@ -28,6 +29,8 @@ struct Args {
     #[options(help = "Optional path to palette file")]
     palette_path: Option<PathBuf>,
 
+    #[options(help = "Blur amount")]
+    blur: Option<f32>,
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -42,11 +45,15 @@ fn main() -> Result<(), Box<dyn Error>> {
         )?
     };
 
-    println!("opening image");
     let image = ImageReader::open(args.input)?.decode()?;
     println!("generating image");
-    let image = generate_image(image, palette)?;
-    println!("saving image");
+    let mut image = generate_image(image, palette)?;
+
+    if let Some(blur) = args.blur {
+        println!("blurring image");
+        image = imageops::blur(&image, blur);
+    }
+
     image.save(args.output)?;
     println!("image saved!");
     Ok(())
