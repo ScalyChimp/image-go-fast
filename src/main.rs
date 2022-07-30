@@ -5,6 +5,8 @@ use image::DynamicImage;
 use image::Pixel;
 use image::Rgb;
 use image::RgbImage;
+use indicatif::ProgressBar;
+use indicatif::ProgressStyle;
 use std::error::Error;
 use std::fs::File;
 use std::io::BufRead;
@@ -36,7 +38,7 @@ struct Args {
 fn main() -> Result<(), Box<dyn Error>> {
     let args = Args::parse_args_default_or_exit();
 
-    println!("getting palette");
+    println!("Loading palette.");
     let palette = if let Some(path) = args.palette_path {
         deserialize_palette_file(path)?
     } else {
@@ -46,27 +48,38 @@ fn main() -> Result<(), Box<dyn Error>> {
     };
 
     let image = ImageReader::open(args.input)?.decode()?;
-    println!("generating image");
+    println!("Generating image.");
     let mut image = generate_image(image, palette)?;
 
     if let Some(blur) = args.blur {
-        println!("blurring image");
+        println!("Blurring image.");
         image = imageops::blur(&image, blur);
     }
 
     image.save(args.output)?;
-    println!("image saved!");
+    println!("Image saved.");
     Ok(())
 }
 
 fn generate_image(image: DynamicImage, palette: Vec<Rgb<u8>>) -> Result<RgbImage, Box<dyn Error>> {
     let mut buffer = image.into_rgb8();
+
+    let progress = ProgressBar::new((buffer.height() * buffer.width()).into());
+    progress.set_style(
+        ProgressStyle::with_template("[{bar:40.green/blue}] [{percent}%] {spinner:.green}")
+            .unwrap()
+            .progress_chars("###"),
+    );
+
     for pixel in buffer.pixels_mut() {
         *pixel = *palette
             .iter()
             .min_by_key(|pix| color_dif(pixel, pix))
             .unwrap();
+        progress.inc(1);
     }
+
+    progress.finish();
     Ok(buffer)
 }
 
