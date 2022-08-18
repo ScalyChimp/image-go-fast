@@ -5,8 +5,6 @@ use image::DynamicImage;
 use image::Pixel;
 use image::Rgb;
 use image::RgbImage;
-use indicatif::ProgressBar;
-use indicatif::ProgressStyle;
 use std::error::Error;
 use std::fs::File;
 use std::io::BufRead;
@@ -63,23 +61,12 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 fn generate_image(image: DynamicImage, palette: Vec<Rgb<u8>>) -> Result<RgbImage, Box<dyn Error>> {
     let mut buffer = image.into_rgb8();
-
-    let progress = ProgressBar::new((buffer.height() * buffer.width()).into());
-    progress.set_style(
-        ProgressStyle::with_template("[{bar:40.green/blue}] [{percent}%] {spinner:.green}")
-            .unwrap()
-            .progress_chars("###"),
-    );
-
     for pixel in buffer.pixels_mut() {
         *pixel = *palette
             .iter()
             .min_by_key(|pix| color_dif(pixel, pix))
             .unwrap();
-        progress.inc(1);
     }
-
-    progress.finish();
     Ok(buffer)
 }
 
