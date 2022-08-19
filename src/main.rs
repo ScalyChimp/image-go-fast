@@ -1,15 +1,11 @@
 use gumdrop::Options;
-use image::imageops;
-use image::io::Reader as ImageReader;
-use image::DynamicImage;
-use image::Pixel;
-use image::Rgb;
-use image::RgbImage;
-use std::error::Error;
-use std::fs::File;
-use std::io::BufRead;
-use std::io::BufReader;
-use std::path::PathBuf;
+use image::{imageops, io::Reader as ImageReader, DynamicImage, Pixel, Rgb, RgbImage};
+use std::{
+    error::Error,
+    fs::File,
+    io::{BufRead, BufReader},
+    path::PathBuf,
+};
 
 #[derive(Options, Debug)]
 struct Args {
