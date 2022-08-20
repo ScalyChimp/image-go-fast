@@ -1,0 +1,4 @@
+#+title: image-go-fast
+#+author: scalychimp
+
+Image-go-fast is a program that will take a palette (which is nothing more that a .txt of hex colors) and an image file, and will fit it to the colors of the palette. What differentiates this from other tools that do similar things is it's speed, by default image-go-fast uses the rayon data parallelism library to multithread the process, which, along with the fact that it's written in a compiled language, make it /much/ faster than something like ImageGoNord.
