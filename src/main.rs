@@ -2,6 +2,7 @@ use gumdrop::Options;
 use image::{imageops, io::Reader as ImageReader, DynamicImage, Pixel, Rgb, RgbImage};
 use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
 use std::{
+    env::current_exe,
     error::Error,
     fs::File,
     io::{BufRead, BufReader},
@@ -40,9 +41,13 @@ fn main() -> Result<(), Box<dyn Error>> {
     let palette = if let Some(path) = args.palette_path {
         deserialize_palette_file(path)?
     } else {
-        deserialize_palette_file(
-            "/home/scalychimp/coding/image-go-fast/palettes/gruvbox.txt".into(),
-        )?
+        let mut dir = current_exe().unwrap();
+        dir.pop();
+        dir.pop();
+        dir.pop();
+        let dir = dir.join("palettes/gruvbox.txt");
+        println!("dir: {:?}", dir);
+        deserialize_palette_file(dir.into())?
     };
 
     println!("opening image");
