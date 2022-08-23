@@ -83,31 +83,24 @@ fn generate_image_multithreaded(
     image: DynamicImage,
     palette: Vec<Rgb<u8>>,
 ) -> Result<RgbImage, Box<dyn Error>> {
-    let buffer: Vec<Rgb<u8>> = image
-        .clone()
-        .into_rgb8()
-        .pixels()
-        .map(|px| px.clone())
-        .collect();
-
-    let buffer: Vec<Rgb<u8>> = buffer
-        .par_iter()
-        .map(|pixel| {
-            return *palette
-                .iter()
-                .min_by_key(|pix| color_dif(pixel, pix))
-                .unwrap();
-        })
-        .collect();
+    let buffer: Vec<Rgb<u8>> = image.clone().into_rgb8().pixels().cloned().collect();
 
     let vec: Vec<u8> = buffer
-        .iter()
-        .flat_map(|buffer| buffer.0.iter())
+        .par_iter()
+        .flat_map(|pixel| {
+            palette
+                .iter()
+                .min_by_key(|pix| color_dif(pixel, pix))
+                .unwrap()
+                .0
+                .par_iter()
+        })
         .cloned()
         .collect();
 
     Ok(RgbImage::from_vec(image.width(), image.height(), vec).unwrap())
 }
+
 fn color_dif(col1: &Rgb<u8>, col2: &Rgb<u8>) -> i32 {
     let chan1 = col1.channels();
     let chan2 = col2.channels();
