@@ -17,11 +17,11 @@ struct Args {
     #[options(
         free,
         parse(from_str = "PathBuf::from"),
-        help = "Where to save output to, image will be saved according to file extension"
+        help = "Where to save output to. Image will be saved according to file extension"
     )]
     output: PathBuf,
 
-    #[options(help = "print help message")]
+    #[options(help = "Print help message")]
     help: bool,
 
     #[options(help = "Disables multithreading")]
