@@ -17,7 +17,7 @@ struct Args {
     #[options(
         free,
         parse(from_str = "PathBuf::from"),
-        help = "Where to save output to. Image will be saved according to file extension"
+        help = "Where to save output to. Image will be formatted according to file extension"
     )]
     output: PathBuf,
 
@@ -47,7 +47,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         dir.pop();
         let dir = dir.join("palettes/gruvbox.txt");
         println!("dir: {:?}", dir);
-        deserialize_palette_file(dir.into())?
+        deserialize_palette_file(dir)?
     };
 
     println!("opening image");
@@ -104,12 +104,11 @@ fn generate_image_multithreaded(
 fn color_dif(col1: &Rgb<u8>, col2: &Rgb<u8>) -> i32 {
     let chan1 = col1.channels();
     let chan2 = col2.channels();
-    let vec: Vec<i32> = vec![
-        i32::abs(chan1[0] as i32 - chan2[0] as i32),
-        i32::abs(chan1[1] as i32 - chan2[1] as i32),
-        i32::abs(chan1[2] as i32 - chan2[2] as i32),
-    ];
-    vec.into_iter().sum()
+    let r_diff = i32::abs(chan1[0] as i32 - chan2[0] as i32);
+    let g_diff = i32::abs(chan1[1] as i32 - chan2[1] as i32);
+    let b_diff = i32::abs(chan1[2] as i32 - chan2[2] as i32);
+
+    r_diff + g_diff + b_diff
 }
 
 fn parse_hex_color(hex_color: &str) -> Result<Rgb<u8>, Box<dyn Error>> {
